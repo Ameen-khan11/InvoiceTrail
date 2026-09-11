@@ -2,13 +2,13 @@ services:
   # Backend API Web Service
   - type: web
     name: invoicetrail-api
-    env: python
+    runtime: python
     rootDir: backend
     plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn --workers=2 --bind=0.0.0.0:$PORU --timeout=120 run:app
+    buildCommand: pip install -r requirements.txt && python seed.py
+    startCommand: gunicorn --workers=2 --bind=0.0.0.0:$PORT --timeout=120 run:app
     envVars:
-      - key: FLASKENV
+      - key: FLASK_ENV
         value: production
       - key: SECRET_KEY
         generateValue: true
@@ -24,12 +24,12 @@ services:
         sync: false
 
   # Frontend Static Site
-  - type: static_site
+  - type: web
     name: invoicetrail-web
+    runtime: static
     rootDir: frontend
     buildCommand: npm ci && npm run build
-    publishPath: dist
-    pullRequestPreviewsEnabled: false
+    staticPublishPath: dist
     routes:
       - type: rewrite
         source: /*
@@ -40,12 +40,9 @@ services:
           type: web
           name: invoicetrail-api
           property: host
-        value: https://${invoicetrail-api.host}/api
-      - key: VITE_GOOGLE_CLIENT_ID
-        sync: false
 
 databases:
-  # Managed PostgreQMDatabase
+  # Managed PostgreSQL Database
   - name: invoicetrail-db
     plan: free
     databaseName: invoicetrail

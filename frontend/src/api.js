@@ -1,4 +1,15 @@
-export const API_BASE = import.meta.env.VITE_API_URL || '/api';
+function getApiBase() {
+  let base = import.meta.env.VITE_API_URL || '/api';
+  if (base && !base.startsWith('http') && !base.startsWith('/')) {
+    base = `https://${base}`;
+  }
+  if (base.startsWith('http') && !base.endsWith('/api')) {
+    base = `${base.replace(/\/+$/, '')}/api`;
+  }
+  return base;
+}
+
+export const API_BASE = getApiBase();
 
 export async function apiFetch(endpoint, options = {}) {
   const token = localStorage.getItem('token');

@@ -21,6 +21,10 @@ def create_app(env: str = "development") -> Flask:
     # migrations to detect tables) before any blueprints/queries run.
     with app.app_context():
         from app import models  # noqa: F401
+        try:
+            db.create_all()
+        except Exception as e:
+            app.logger.warning(f"Database table initialization notice: {e}")
 
     # --- blueprints ---
     from app.routes.auth import auth_bp
