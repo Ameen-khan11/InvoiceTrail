@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: invoicetrail-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: invoicetrail
+      MYSQL_USER: invoicetrail_user
+      MYSQL_PASSWORD: invoicetrail_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: invoicetrail-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      FLASK_ENV: production
+      SECRET_KEY: enterprise-production-invoicetrail-secret-key-replace-in-prod
+      JWT_SECRET_KEY: enterprise-jwt-secret-key-replace-in-prod
+      DATABASE_URL: mysql+pymysql://invoicetrail_user:invoicetrail_password@db:3306/invoicetrail
+      CORS_ORIGINS: http://localhost,http://localhost:80,http://localhost:5173
+      MAIL_SERVER: smtp.mailtrap.io
+      MAIL_PORT: 2525
+      MAIL_USE_TLS: "True"
+      MAIL_USERNAME: ""
+      MAIL_PASSWORD: ""
+      MAIL_DEFAULT_SENDER: no-reply@invoicetrail.com
+    ports:
+      - "5000:5000"
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: invoicetrail-web
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+
+volumes:
+  mysql_data:
+    driver: local

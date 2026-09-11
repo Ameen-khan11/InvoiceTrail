@@ -1,0 +1,52 @@
+services:
+  # Backend API Web Service
+  - type: web
+    name: invoicetrail-api
+    env: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --workers=2 --bind=0.0.0.0:$PORU --timeout=120 run:app
+    envVars:
+      - key: FLASKENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: invoicetrail-db
+          property: connectionString
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+
+  # Frontend Static Site
+  - type: static_site
+    name: invoicetrail-web
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    publishPath: dist
+    pullRequestPreviewsEnabled: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: invoicetrail-api
+          property: host
+        value: https://${invoicetrail-api.host}/api
+      - key: VITE_GOOGLE_CLIENT_ID
+        sync: false
+
+databases:
+  # Managed PostgreQMDatabase
+  - name: invoicetrail-db
+    plan: free
+    databaseName: invoicetrail
+    user: invoicetrail_user
