@@ -13,12 +13,15 @@ class Config:
     GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
 
     # --- Database ---
-    # Supports SQLite, MySQL, and PostgreSQL (handles cloud postgres:// prefix)
+    # Supports TiDB Cloud (MySQL), PostgreSQL, and SQLite
     _db_url = os.environ.get(
         "DATABASE_URL", "mysql+pymysql://root:password@localhost:3306/invoicetrail"
     )
     if _db_url.startswith("postgres://"):
         _db_url = _db_url.replace("postgres://", "postgresql://", 1)
+    elif _db_url.startswith("mysql://"):
+        # TiDB and cloud providers usually give mysql://user:pass@host:4000/db
+        _db_url = _db_url.replace("mysql://", "mysql+pymysql://", 1)
     SQLALCHEMY_DATABASE_URI = _db_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

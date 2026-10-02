@@ -73,12 +73,12 @@ def test_dashboard_summary_metrics(client, create_user):
     db.session.add_all([inv1, inv2, inv3, inv4])
     db.session.flush()
 
-    # Payments
+    # Payments (both within current calendar month so paid_this_month equals 10,000)
     p1 = Payment(
         user_id=user.id,
         invoice_id=inv2.id,
         amount=Decimal("5000.00"),
-        paid_on=today - timedelta(days=4),
+        paid_on=today.replace(day=1),
         method="bank",
     )
     p2 = Payment(

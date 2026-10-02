@@ -26,10 +26,13 @@ def seed_database():
     app = create_app()
 
     with app.app_context():
-        # Cleanly rebuild schema to ensure columns like google_id exist
-        print("Recreating database tables...")
-        db.drop_all()
+        # Ensure all tables exist without dropping existing customer data
         db.create_all()
+
+        existing = User.query.filter_by(email="freelancer@example.com").first()
+        if existing:
+            print("Database already contains seed data. Skipping seed.")
+            return
 
         print("Creating User 1 (Freelancer - Free Plan)...")
         u1 = User(
