@@ -24,6 +24,22 @@ class Config:
         _db_url = _db_url.replace("mysql://", "mysql+pymysql://", 1)
     SQLALCHEMY_DATABASE_URI = _db_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    
+    _engine_options = {
+        "pool_recycle": 280,
+        "pool_pre_ping": True,
+    }
+    # If connecting to TiDB Cloud Serverless, enforce secure SSL connection
+    if "tidbcloud.com" in _db_url:
+        import ssl
+        _ca_path = os.environ.get("CA")
+        if _ca_path and os.path.exists(_ca_path):
+            _ssl_ctx = ssl.create_default_context(cafile=_ca_path)
+        else:
+            _ssl_ctx = ssl.create_default_context()
+        _engine_options["connect_args"] = {"ssl": _ssl_ctx}
+
+    SQLALCHEMY_ENGINE_OPTIONS = _engine_options
 
     # --- JWT ---
     JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "dev-jwt-secret-change-me-please-32chars")

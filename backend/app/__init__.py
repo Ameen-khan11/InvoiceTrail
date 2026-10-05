@@ -6,7 +6,8 @@ from app.extensions import db, migrate, jwt, mail, cors
 def create_app(env: str = "development") -> Flask:
     app = Flask(__name__)
     if isinstance(env, str):
-        app.config.from_object(config_by_name.get(env, config_by_name["development"]))
+        env_key = env.lower()
+        app.config.from_object(config_by_name.get(env_key, config_by_name["development"]))
     elif env is not None:
         app.config.from_object(env)
 
