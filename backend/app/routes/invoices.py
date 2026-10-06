@@ -83,17 +83,23 @@ def list_invoices():
         return error_response(f"Unknown sort '{sort}'", status=422, field="sort")
     query = query.order_by(sort_map[sort])
 
-    pagination = db.paginate(query, page=page, per_page=PER_PAGE, error_out=False)
+    try:
+        total_items = query.count()
+        total_pages = max(1, (total_items + PER_PAGE - 1) // PER_PAGE)
+        items = query.limit(PER_PAGE).offset((page - 1) * PER_PAGE).all()
 
-    return jsonify({
-        "invoices": [inv.to_dict(include_client=True) for inv in pagination.items],
-        "pagination": {
-            "page": pagination.page,
-            "per_page": PER_PAGE,
-            "total_items": pagination.total,
-            "total_pages": pagination.pages,
-        },
-    }), 200
+        return jsonify({
+            "invoices": [inv.to_dict(include_client=True) for inv in items],
+            "pagination": {
+                "page": page,
+                "per_page": PER_PAGE,
+                "total_items": total_items,
+                "total_pages": total_pages,
+            },
+        }), 200
+    except Exception as e:
+        current_app.logger.exception(f"Error fetching invoices: {e}")
+        return jsonify({"error": str(e), "invoices": []}), 500
 
 
 @invoices_bp.post("")
