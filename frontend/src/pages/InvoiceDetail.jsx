@@ -18,7 +18,7 @@ export default function InvoiceDetail() {
   const [paymentData, setPaymentData] = useState({
     amount: '',
     paid_on: new Date().toISOString().split('T')[0],
-    method: 'upi',
+    method: 'bank',
     reference: '',
   });
 
@@ -183,12 +183,11 @@ export default function InvoiceDetail() {
       {/* Invoice Header */}
       <div className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
             <h1 style={{ fontSize: '1.75rem', fontWeight: 800, margin: 0 }}>{invoice.invoice_number}</h1>
-            {invoice.is_overdue ? (
+            <span className={`badge badge-${invoice.status}`}>{invoice.status.replace('_', ' ')}</span>
+            {invoice.is_overdue && (
               <span className="badge badge-overdue">Overdue ({invoice.days_late} days)</span>
-            ) : (
-              <span className={`badge badge-${invoice.status}`}>{invoice.status.replace('_', ' ')}</span>
             )}
           </div>
           <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.25rem' }}>
@@ -409,10 +408,10 @@ export default function InvoiceDetail() {
                     value={paymentData.method}
                     onChange={(e) => setPaymentData({ ...paymentData, method: e.target.value })}
                   >
-                    <option value="upi">UPI</option>
-                    <option value="bank">Bank Transfer (NEFT/IMPS)</option>
+                    <option value="bank">Bank Transfer (IBFT / Raast)</option>
+                    <option value="upi">QR / EasyPaisa / JazzCash</option>
                     <option value="cash">Cash</option>
-                    <option value="card">Card</option>
+                    <option value="card">Card / POS</option>
                     <option value="other">Other</option>
                   </select>
                 </div>

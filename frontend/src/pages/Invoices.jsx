@@ -271,11 +271,12 @@ export default function Invoices() {
                       {inv.currency} {inv.amount}
                     </td>
                     <td>
-                      {inv.is_overdue ? (
-                        <span className="badge badge-overdue">Overdue ({inv.days_late}d)</span>
-                      ) : (
+                      <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', alignItems: 'center' }}>
                         <span className={`badge badge-${inv.status}`}>{inv.status.replace('_', ' ')}</span>
-                      )}
+                        {inv.is_overdue && (
+                          <span className="badge badge-overdue">Overdue ({inv.days_late}d)</span>
+                        )}
+                      </div>
                     </td>
                     <td style={{ fontWeight: 600 }}>
                       {inv.currency} {inv.balance_due}

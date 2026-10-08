@@ -260,7 +260,7 @@ export default function Clients() {
                   <input
                     type="text"
                     className="form-input"
-                    placeholder="+91 9876543210"
+                    placeholder="+92 300 1234567"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   />

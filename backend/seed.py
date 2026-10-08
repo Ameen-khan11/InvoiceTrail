@@ -64,7 +64,7 @@ def seed_database():
             name="Acme Corp",
             email="contact@acme.com",
             company="Acme Corporation Ltd",
-            phone="+91 98765 43210",
+            phone="+92 300 1234567",
             notes="Quarterly branding and UI design client. Pays on 30-day terms.",
         )
         c1_stark = Client(
@@ -72,15 +72,15 @@ def seed_database():
             name="Stark Media",
             email="finance@starkmedia.io",
             company="Stark Media Pvt Ltd",
-            phone="+91 98234 56789",
+            phone="+92 321 9876543",
             notes="Marketing agency partner. Requires detailed descriptions on invoices.",
         )
         c1_bluewave = Client(
             user_id=u1.id,
             name="BlueWave Tech",
-            email="invoicing@bluewave.in",
+            email="invoicing@bluewave.pk",
             company="BlueWave Technologies",
-            phone="+91 97111 22334",
+            phone="+92 333 4567890",
             notes="SaaS product consultancy client.",
         )
         c1_zenith = Client(

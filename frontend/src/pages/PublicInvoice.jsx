@@ -134,7 +134,7 @@ export default function PublicInvoice() {
               <div style={{ fontSize: '16px', fontWeight: '600', color: '#64748b', marginTop: '4px' }}>
                 #{invoice.invoice_number}
               </div>
-              <div style={{ marginTop: '12px' }}>
+              <div style={{ marginTop: '12px', display: 'flex', gap: '8px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
                 <span
                   style={{
                     display: 'inline-block',
@@ -144,12 +144,29 @@ export default function PublicInvoice() {
                     fontWeight: '700',
                     textTransform: 'uppercase',
                     letterSpacing: '0.05em',
-                    backgroundColor: isPaid ? '#dcfce7' : isOverdue ? '#fee2e2' : invoice.status === 'partially_paid' ? '#fef3c7' : '#e0f2fe',
-                    color: isPaid ? '#166534' : isOverdue ? '#991b1b' : invoice.status === 'partially_paid' ? '#92400e' : '#0369a1',
+                    backgroundColor: isPaid ? '#dcfce7' : invoice.status === 'partially_paid' ? '#fef3c7' : '#e0f2fe',
+                    color: isPaid ? '#166534' : invoice.status === 'partially_paid' ? '#92400e' : '#0369a1',
                   }}
                 >
-                  {isOverdue ? 'Overdue' : invoice.status.replace('_', ' ')}
+                  {invoice.status.replace('_', ' ')}
                 </span>
+                {isOverdue && (
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      padding: '4px 12px',
+                      borderRadius: '9999px',
+                      fontSize: '12px',
+                      fontWeight: '700',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                      backgroundColor: '#fee2e2',
+                      color: '#991b1b',
+                    }}
+                  >
+                    Overdue
+                  </span>
+                )}
               </div>
             </div>
           </div>
